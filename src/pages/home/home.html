@@ -3,16 +3,41 @@
     <ion-title>
       Sonidos
     </ion-title>
+    <ion-buttons end>
+      <button ion-button
+              *ngIf="!isOrderActive"
+              (click)="isOrderActive = true">
+        Ordenar
+      </button>
+      <button ion-button
+              *ngIf="isOrderActive"
+              (click)="isOrderActive = false">
+        Terminado
+      </button>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <ion-item *ngFor="let animal of animales">
-      <ion-avatar item-left>
-        <img [src]="animal.imagen">
-      </ion-avatar>
-      <h2>{{animal.nombre}}</h2>
-    </ion-item>
+  <ion-refresher [enabled]="!isOrderActive" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <ion-list [reorder]="isOrderActive" (ionItemReorder)="reorderAnimal( $event )">
+    <ion-item-sliding *ngFor="let animal of animales; let i = index;" >
+      <ion-item (click)="reproducir( animal )">
+        <ion-avatar item-left>
+          <img [src]="animal.imagen">
+        </ion-avatar>
+        <h2>{{animal.nombre}}</h2>
+        <ion-icon *ngIf="!animal.reproduciendo" name="play" item-right></ion-icon>
+        <ion-icon *ngIf="animal.reproduciendo" name="pause" item-right></ion-icon>
+      </ion-item>
+
+      <ion-item-options side="right">
+        <button ion-button color="danger" (click)="deleteAnimal(i)">
+          <ion-icon name="trash"></ion-icon>
+        </button>
+      </ion-item-options>
+    </ion-item-sliding>
   </ion-list>
 </ion-content>
